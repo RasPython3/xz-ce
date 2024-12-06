@@ -22,10 +22,11 @@ jobs:
     - name: Install required packages
       run: |
         sudo apt update
-        sudo apt install autopoint -y
+        sudo apt install autopoint po4a -y
 
     - name: Prepare and configure
       run: |
+        ./autogen.sh
         ./configure \
           --prefix= \
           --enable-silent-rules \
