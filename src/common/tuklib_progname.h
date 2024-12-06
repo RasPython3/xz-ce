@@ -13,7 +13,9 @@
 #define TUKLIB_PROGNAME_H
 
 #include "tuklib_common.h"
-#include <errno.h>
+#ifndef _WIN32_WCE
+#	include <errno.h>
+#endif
 
 TUKLIB_DECLS_BEGIN
 

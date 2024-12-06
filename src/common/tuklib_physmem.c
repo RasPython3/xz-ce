@@ -77,7 +77,7 @@ tuklib_physmem(void)
 {
 	uint64_t ret = 0;
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if (defined(_WIN32) || defined(__CYGWIN__)) && !defined(_WIN32_WCE)
 	// This requires Windows 2000 or later.
 	MEMORYSTATUSEX meminfo;
 	meminfo.dwLength = sizeof(meminfo);
@@ -122,6 +122,15 @@ tuklib_physmem(void)
 		ret = meminfo.dwTotalPhys;
 	}
 */
+
+#elif defined(_WIN32_WCE)
+	// However GlobalMemoryStatusEx() is not supported by WindowsCE, GlobalMemoryStatus() is supported.
+	// so it is fine to link against it unconditionally. Note that
+	// GlobalMemoryStatus() has no return value.
+	MEMORYSTATUS meminfo;
+	meminfo.dwLength = sizeof(meminfo);
+	GlobalMemoryStatus(&meminfo);
+	ret = meminfo.dwTotalPhys;
 
 #elif defined(__OS2__)
 	unsigned long mem;
