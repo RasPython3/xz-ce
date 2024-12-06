@@ -26,7 +26,6 @@ jobs:
 
     - name: Prepare and configure
       run: |
-        ./autogen.sh
         ./configure \
           --prefix= \
           --enable-silent-rules \
