@@ -49,7 +49,7 @@ jobs:
       run: |
         mkdir -p output/lib output/include
         cp src/liblzma/.libs/*.dll src/liblzma/.libs/*.a output/lib/
-        cp -r pkg/include/* output/include/
+        cp -r src/liblzma/api/lzma.h src/liblzma/api/lzma output/include/
         cp COPYING COPYING.0BSD README output/
 
     - name: Upload zip file
