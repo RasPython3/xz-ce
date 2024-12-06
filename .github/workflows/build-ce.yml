@@ -19,6 +19,11 @@ jobs:
         unzip cegcc.zip -d /opt
         echo "/opt/cegcc/bin" >> $GITHUB_PATH
 
+    - name: Install required packages
+      run: |
+        sudo apt update
+        sudo apt install autopoint -y
+
     - name: Prepare and configure
       run: |
         ./autogen.sh
