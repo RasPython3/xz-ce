@@ -1,0 +1,54 @@
+name: Build liblzma for WinCE
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install CeGCC
+      run: |
+        wget https://github.com/brain-hackers/cegcc-build/releases/download/2022-10-26-225811/cegcc-x86_64-2022-10-26-225811.zip -O cegcc.zip
+        unzip cegcc.zip -d /opt
+        echo "/opt/cegcc/bin" >> $GITHUB_PATH
+
+    - name: Prepare and configure
+      run: |
+        ./autogen.sh
+        ./configure \
+          --prefix= \
+          --enable-silent-rules \
+          --disable-dependency-tracking \
+          --disable-threads \
+          --disable-nls \
+          --disable-scripts \
+          --disable-xz \
+          --disable-xzdec \
+          --disable-lzmainfo \
+          --disable-lzmadec \
+          --host="arm-mingw32ce" \
+          CFLAGS="-Dsig_atomic_t=bool -DWIN32_LEAN_AND_MEAN -march=armv5tej -mcpu=arm926ej-s -Wno-attributes -DWC_NO_BEST_FIT_CHARS -D_WIN32_WCE=0x0600 -D_MAX_PATH=260 -D_UNICODE -DUNICODE -fvisibility=hidden -fno-pic -fno-strict-aliasing -O2"
+
+    - name: Build
+      run: |
+        make -j$(nproc)
+
+    - name: Pack products
+      run: |
+        mkdir -p output/lib output/include
+        cp src/liblzma/.libs/*.dll src/liblzma/.libs/*.a output/lib/
+        cp -r pkg/include/* output/include/
+        cp COPYING COPYING.0BSD README output/
+
+    - name: Upload zip file
+      uses: actions/upload-artifact@v4
+      with:
+        name: liblzma
+        path: output
